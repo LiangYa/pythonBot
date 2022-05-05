@@ -1,0 +1,4 @@
+对话的删除
+match(a:Action) where a.dialogueId = 18519 return a
+match(s:Slot) where s.dialogueId = 18519 return s
+
