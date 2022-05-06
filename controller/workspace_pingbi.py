@@ -17,6 +17,7 @@ def dealFAQ():
         title = str(get_cell_type_copy(i, 13, merged, sheetFaq))
         title2 = str(get_cell_type_copy(i, 14, merged, sheetFaq))
         title = "{}{}".format(title, title2)
+        title = "【怎么联系客服】【公司在哪】【怀疑平台】【你怎么有我号码】【人还是机器人】【询问工号】【投诉】【别给我打电话了】【品牌反应】【强烈拒绝】"
         title = title.replace("屏蔽标签：\n", "").replace("\n", ",").replace("【", "").replace("】", ",").replace(",,", ",")\
             .replace(" ", "")
         if title != "" and title != '':

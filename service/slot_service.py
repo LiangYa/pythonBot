@@ -134,6 +134,7 @@ def copyByDialogueIdNew(ori_workspace_id, ori_version_id, ori_dialogue_id,
             else:
                 # 添加单个槽位
                 slotInfo = slot_dao.getSlotFromNew(ori_workspace_id, data["id"], ori_version_id, cookie)
-                slot = slot_dao.addSlot(slotInfo, workspace_id, version_id, dialogue_id, cookie)
+                # slot = slot_dao.addSlot(slotInfo, workspace_id, version_id, dialogue_id, cookie)
+                slot = slot_dao.copySlot(slotInfo, workspace_id, version_id, dialogue_id, cookie)
                 data["id"] = slot["slot"]["id"]
     slot_dao.commit(json.dumps(flowOldJson), workspace_id, version_id, dialogue_id, cookie)

@@ -291,7 +291,75 @@ def createSlot(slot_info, init_reply, workspace_id, version_id, dialogue_id, coo
     return response.json()["result"]
 
 
-# 新平台-新建
+# 新平台-复制
+def copySlot(slot_infos, workspace_id, version_id, dialogue_id, cookie):
+    fillSlotActionVO = None
+    fillSlotAction = slot_infos["fillSlotActionVO"]
+    initReply = slot_infos["initReply"]
+    slot_info = slot_infos["slot"]
+    slot = {
+        "dialogueId": dialogue_id,
+        "versionId": version_id,
+        "workspaceId": workspace_id,
+        "id": -2,
+        "identity": slot_info["identity"],
+        "inherit": slot_info["inherit"],
+        "isUserInput": 1,
+        "name": slot_info["name"],
+        "optional": slot_info["optional"],
+        "rule": None,
+        "slotValueSource": slot_info["slotValueSource"]
+    }
+    slotCard = {
+        "cancelButton": 2,
+        "cardId": 0,
+        "cardKeys": "",
+        "cardType": "TEXT",
+        "confirmButton": 2,
+        "content": "",
+        "source": "",
+        "telBroadType": 1,
+        "telContent": "",
+        "title": "",
+        "voiceBroadType": 1,
+        "voiceContent": ""
+    }
+    if fillSlotAction is not None:
+        interfaceParamTemplate = fillSlotAction["interfaceParamTemplate"]
+        paramTemplates = "{}"
+        resultTemplate = "1"
+        if interfaceParamTemplate is not None:
+            paramTemplates = interfaceParamTemplate["paramTemplates"]
+            resultTemplate = interfaceParamTemplate["resultTemplate"]
+        fillSlotActionVO = {
+            "actionTargetSystem": fillSlotAction["actionTargetSystem"],
+            "interfaceParamTemplate": {
+                "interfaceId": interface_service.getInterfaceByName(fillSlotAction["businessInterface"]["name"], workspace_id, cookie),
+                "paramTemplates": paramTemplates,
+                "resultTemplate": resultTemplate,
+                "versionId": version_id,
+                "workspaceId": workspace_id
+            }
+        }
+    data = {
+        "actionId": None,
+        "fillSlotActionVO": fillSlotActionVO,
+        "initReply": initReply,
+        "repeated": False,
+        "slot": slot,
+        "slotCard": slotCard,
+        "versionId": version_id,
+        "workspaceId": workspace_id
+    }
+    url = "{}/configNew/slot/save".format(DM_IP_NEW)
+    logPredix = "[槽位-新平台][添加槽位信息]{}".format(url)
+    Logger.info(logPredix)
+    Logger.info(data)
+    response = request_util.post_json(url, data, cookie)
+    return response.json()["result"]
+
+
+# 旧平台-新建
 def createSlotOld(slot_info, init_reply, workspace_id, dialogue_id, cookie):
     fillSlotActionVO = None
     initReply = init_reply
@@ -384,5 +452,5 @@ def getSlotFromNew(workspace_id, slot_id, version_id, cookie):
     Logger.info(logPredix)
     response = request_util.get_old(url, cookie)
     resultJson = response.json()
-    Logger.info(resultJson)
+    # Logger.info(resultJson)
     return resultJson["result"]

@@ -9,7 +9,7 @@ def copyWorkspace(old_workspace_id, old_cookie, workspace_id, version_id, cookie
     # 复制对话接口
     # dialogue_service.copyDialogue(workspace_id, version_id, cookie)
     # 复制单个对话接口
-    slot_service.copyByDialogueId(old_workspace_id, 2222, old_cookie, workspace_id, version_id, 137150, cookie)
+    slot_service.copyByDialogueId(old_workspace_id, 2262, old_cookie, workspace_id, version_id, 156777, cookie)
     # # 根据空间复制对话流程接口
     # slot_service.copyAllByDialogueList(old_workspace_id, old_cookie, workspace_id, version_id, cookie)
 
@@ -22,9 +22,10 @@ def copyWorkspaceNew(ori_workspace_id, ori_version_id, ori_dialogue_id,
 
 
 if __name__ == '__main__':
-    old_cookie = 'JSESSIONID=node0rt3wpq1dmowi14e8j9qboynom234057.node0'
-    cookie = 'sidebar_toggle_state=off; JSESSIONID=node01w8fu4ee4zw6f1fpdl2ue5wcj6114328.node0'
-    copyWorkspace(324, old_cookie, 74915, 74916, cookie)
+    old_cookie = 'JSESSIONID=node01x9nq0apx5ovq151tluavhbb3a1648051.node0'
+    cookie = 'sidebar_toggle_state=off; JSESSIONID=node01noo7fn1qrp0dlef7ihvsibqs116851.node0'
+    # copyWorkspace(350, old_cookie, 993, 134, cookie)
+    copyWorkspaceNew(993, 134, 156305, 993, 134, 149588, cookie)
 
 
 
