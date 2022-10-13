@@ -22,9 +22,15 @@ class CommonUtil:
         return nameNew
 
     # 从返回的数据中解析出来
-    def get_dialogue_name(self, context):
-        pattern = r'【(.+)】'
+    def get_dialogue_name(self, contextStr):
+        # pattern = r'【(\w+)|(\w+-)?】'
+        contextStr = contextStr.replace("｜", "|")
+        contextList = contextStr.split("|")
+        context = contextList[0]
+        pattern = r'【(.*)】'
         res = None
+        # 去掉 【FAQ答案】
+        context = context.replace("【FAQ答案】", "").replace("【faq答案】", "")
         matchRes = re.search(pattern, context)
         if matchRes is not None:
             res = matchRes.group(1)
@@ -36,6 +42,6 @@ class CommonUtil:
 
 if __name__ == '__main__':
     ww = CommonUtil()
-    ww.get_dialogue_name("【FAQ答案】+转成功+【KH20-1C】/转失败+【KH29-1C】")
+    ww.get_dialogue_name("【主-开场】｜【开场-表明来意首句】")
     pass
 

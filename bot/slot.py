@@ -105,7 +105,7 @@ def commit(flow_old_json, workspace_id, version_id, dialogue_id, cookie, json=No
         "versionId": version_id,
         "dialogueId": dialogue_id,
         "flow": flow_old_json,
-        "saveStateTrack": False
+        "saveStateTrack": True
     }
     response = request_util.post(url, data, cookie)
     json = response.json()

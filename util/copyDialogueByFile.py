@@ -19,8 +19,9 @@ from dao import slot_dao
 # Excel导入流程
 # 京东-新平台创建对话流程
 def createSlotsNew(workspace_id, version_id, cookie):
-    readBook = xlrd.open_workbook(r'../excel/樊登新平台策略详情.xlsx')
+    readBook = xlrd.open_workbook(r'../excel/企业购-家具.xlsx')
     sheetFaq = readBook.sheet_by_index(0)
+    # sheetFaq = readBook.sheet_by_name("JT复贷成熟期-1call实转-淑婷-20220920")
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
     nodeDataArray = [
@@ -130,6 +131,13 @@ def createSlotsNew(workspace_id, version_id, cookie):
             replyCollects[reply_key] = answer
             curLink = addLinkData(pre_node_key, cur_node_key, name, attitude, dialogue_branch, dialogue_round)
             linkDataArray.append(curLink)
+        elif answer == '':
+            # 结果节点（跳转）
+            node_id = long(getDialogueIdByContext(workspace_id, version_id, content, cookie))
+            nodeDataEnd = addEndNode(cur_node_key, dialogue_branch, dialogue_round * 2, "JUMP_DIALOGUE", node_id)
+            nodeDataArray.append(nodeDataEnd)
+            curLink = addLinkData(pre_node_key, cur_node_key, name, attitude, dialogue_branch, dialogue_round)
+            linkDataArray.append(curLink)
         else:
             # 标签节点 + 结果节点(跳转)
             answer = "{}{}".format(answer, constants.LABEL_CONTINUE)
@@ -180,7 +188,7 @@ def addLinkData(from_key=None, to_key=None, desc="为空", title="", number=0, d
         express = '#if($!session.query == "@@quiet@@") 1 #end'
         compare_type = "EQUALS"
         value = "1"
-    elif "其他" in title or "无明确回应" in title or "" == title or '' == title or title is None:
+    elif ("其他" in title and "其他平台" not in title) or "无明确回应" in title or title == "" or title == '' or title is None:
         desc = "为空"
         if "其他" in title and "男" in title:
             express = '#if("${session.queryAttitude}" == "无" && ' \
@@ -204,6 +212,10 @@ def addLinkData(from_key=None, to_key=None, desc="为空", title="", number=0, d
         express = '#if("${session.queryAttitude}" == "是") 1 #end'
         compare_type = "EQUALS"
         value = "1"
+    elif "不需要返回" in title:
+        express = '#if($!{slot.share_guide_noneed_return.value} == 1) 1 #end'
+        compare_type = "EQUALS"
+        value = "1"
     elif "FAQ" in title:
         express = '#if("$!FaqResult.a" != "") 1 #end'
         if "高意向" in title:
@@ -224,6 +236,7 @@ def addLinkData(from_key=None, to_key=None, desc="为空", title="", number=0, d
             for faq in faq_title_list:
                 faq_express = faq_express + ' $!{slot.share_' + SHARE_NAME + '_' + \
                               constants.KNOWN[dialogue_round] + '.value} == "' + faq + '" ||'
+                # faq_express = faq_express + ' $!{FaqResult.standard_query} == "' + faq + '" ||'
         if faq_express != "":
             faq_express = faq_express[0:len(faq_express)-2]
         express = "#if({}) 1 #end".format(faq_express)
@@ -322,8 +335,8 @@ def addSlotNode(name, k, dialogue_branch, dialogue_round):
 
 
 if __name__ == '__main__':
-    cookie = "JSESSIONID=node0gflqhr94ykth1weg2hy4c4lt1389980.node0"
-    dealWorkspace(46051, 46052, 150284, cookie)
+    cookie = "JSESSIONID=node011qesp9arhtngy13cq1pwswv03688879.node0"
+    dealWorkspace(661883, 661884, 661673, cookie)
     # dealWorkspace(50468, 104126, 105755, cookie)
     # createSlotsNew()
 

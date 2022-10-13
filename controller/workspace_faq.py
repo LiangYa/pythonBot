@@ -4,22 +4,25 @@ import xlrd
 from config import constants
 from util.merge_cell_util import get_cell_type, get_cell_type_copy
 from util.operate_excel import OperateExcel
+from service.import_file_service import importFileService
 
 
 # 新平台-京东加微
 def dealFAQ():
+    labelUtil = importFileService()
     operateExcel = OperateExcel()
-    readBook = xlrd.open_workbook(r'../excel/JD股票开户项目-BOT流程（1.0版）.xlsx')
-    sheetFaq = readBook.sheet_by_name("京东FAQ")
-    # sheetFaq = readBook.sheet_by_index(3)
+    readBook = xlrd.open_workbook(r'../excel/MT-美团发卡预测试bot.xlsx')
+    # sheetFaq = readBook.sheet_by_name("FAQ")
+    sheetFaq = readBook.sheet_by_index(1)
     sheetWorkspaceList = []
     sheetVersionList = []
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
-    for i in range(1, nrows):
+    for i in range(1, 19):
         recordNumber = sheetFaq.cell(i, 1).value  # 录音编号
         userLabel = sheetFaq.cell(i, 2).value  # 用户标签
         sceneTalk = sheetFaq.cell(i, 3).value  # 场景话术
+        scoreLabel = sheetFaq.cell(i, 4)  # 标签分值
         actionLabel = sheetFaq.cell(i, 5).value  # 动作标签
         merged = sheetFaq.merged_cells
         title = get_cell_type_copy(i, 0, merged, sheetFaq)
@@ -58,6 +61,11 @@ def dealFAQ():
                 answer = "{}{}".format(answer, constants.FAQ_SORT_HIGH)
             elif constants.SORT_MIDDLE in faqSort:
                 answer = "{}{}".format(answer, constants.FAQ_SORT_MIDDLE)
+            # 电销标签
+            answer = "{}{}".format(labelUtil.add_common_label(actionLabel), answer)
+            # # 标签分值
+            # if scoreLabel != '':
+            #     answer = "[{}]{}".format(scoreLabel, answer)
         length = len(sheetVersionList)
         preFaq = None
         if length > 0:

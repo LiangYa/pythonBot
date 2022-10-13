@@ -6,18 +6,20 @@ from util.operate_excel import OperateExcel
 
 
 def dealFAQ():
-    readBook = xlrd.open_workbook(r'../excel/京东加微-22年4月.xlsx')
-    sheetFaq = readBook.sheet_by_index(5)
+    readBook = xlrd.open_workbook(r'../excel/JT复贷1call-淑婷模型-20220906.xlsx')
+    sheetFaq = readBook.sheet_by_index(0)
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
-    faqSet = set()
+    faqSet = []
     result = ""
-    for i in range(55, 56):
+    for i in range(2, 3):
         merged = sheetFaq.merged_cells
-        title = str(get_cell_type_copy(i, 13, merged, sheetFaq))
+        title = ''
+        # title = str(get_cell_type_copy(i, 13, merged, sheetFaq))
         title2 = str(get_cell_type_copy(i, 14, merged, sheetFaq))
         title = "{}{}".format(title, title2)
         title = "【怎么联系客服】【公司在哪】【怀疑平台】【你怎么有我号码】【人还是机器人】【询问工号】【投诉】【别给我打电话了】【品牌反应】【强烈拒绝】"
+        # title = "合作银行,我是要开卡吗,怎么操作,费用问题,打电话有什么目的,怎么激活,审核不-过无原因,额度多少,什么平台,可以注销吗,活动期限,公司在哪,联名卡邮寄,已申请联名卡,发短信,年费问题,没听懂,信用卡基础功能,关于产品,查询征信,客户咨询甲方其他产品,会自己操作,额度太低,确认平台,信用卡提额,加微信,关于活动,没听清,办卡条件,很少用甲方,单币卡还是双币卡,转人工,打断倾听,不需要-无原因,不需要-已经有卡,不需要-不用信用卡,不需要-会考虑,在忙-快点说,在忙-预约回访,客户会考虑"
         title = title.replace("屏蔽标签：\n", "").replace("\n", ",").replace("【", "").replace("】", ",").replace(",,", ",")\
             .replace(" ", "")
         if title != "" and title != '':
@@ -26,7 +28,8 @@ def dealFAQ():
                 for faq in faqTitle:
                     if faq == '':
                         continue
-                    faqSet.add(faq)
+                    if faq not in faqSet:
+                        faqSet.append(faq)
         if len(faqSet) > 0:
             for faqSetTitle in faqSet:
                 result = result + "," + faqSetTitle
@@ -34,15 +37,21 @@ def dealFAQ():
 
 
 def dealFAQ1():
-    title = "有人联系过,投诉,你怎么有我号码,别给我打电话了,怀疑平台,询问工号,对甲方品牌的反应,非本人操作,不符合办卡条件-年龄问题,不符合办卡条件,强烈拒绝"
+    # title = "有人联系过,投诉,你怎么有我号码,别给我打电话了,怀疑平台,询问工号,对甲方品牌的反应,非本人操作,不符合办卡条件-年龄问题,不符合办卡条件,很少用甲方,客户反感推销,客户要求挂机,强烈拒绝,确认平台,人还是机器人,打断倾听,怀疑信息泄露,要求反馈立刻处理,不需要-无原因,不需要-会考虑,不需要-已经有卡,不需要-不用信用卡,在忙-没时间-有原因,在忙-没时间-无原因,在忙-快点说,客户会考虑,在忙-预约回访,转人工, 已申请联名卡,审核不过-无原因,关于产品,额度太低,客户咨询甲方其他产品,发短信,加微信,合作银行,怎么操作,我是要开卡吗,额度多少,信用卡基础功能,单币卡还是双币卡,办卡条件,关于活动,信用卡提额,查询征信,年费问题,联名卡邮寄,活动期限,活动期限,可以注销吗,怎么激活,费用问题，什么平台"
+    title = ""
+    title = " 于活动、办理条件、办理条件、转人工、会自己操作、发短信、没听懂、公司在哪、打电话有什么目的、加微信、没听清、咨询京东其他产品、行情如何，能做吗、证件认证、京东有股票交易资质吗、个人可持多少个证券公司账户、后期可以改手机号码吗、佣金多少、提现到银行卡手续费是多少、股票怎么买、开通后什么时候可以用、有没有好的股票和基金推荐、账户干嘛用、不需要-无原因、不需要-会考、不需要-已经有股票账户、在忙-没时间-无原因/客户会考虑、在忙-没时间-有原因、在忙-快点说、在忙-预约回访、什么平台"
+    title = title.replace("，", ",").replace("、", ",")
     faq_title_list = title.split(",")
-    faq_express = ""
+    res = ""
     for faq in faq_title_list:
-        faq_express = faq_express + ' $!{FaqResult.standard_query} == "' + faq + '" ||'
-    if faq_express != "":
-        faq_express = faq_express[0:len(faq_express)-2]
-    express = "#if({}) 1 #end".format(faq_express)
-    print(express)
+        if faq not in res:
+            res += faq + ","
+    print(res)
+
+def ddd():
+    title = "172.26.194.115,172.26.194.198,172.26.194.61,172.26.194.62,172.26.194.69,172.26.194.106,172.26.194.108,172.26.194.188,172.26.194.191,172.26.194.54,172.26.194.172,172.26.194.176,172.26.194.81,172.26.194.82,172.26.194.87,172.26.194.89,172.26.194.168,172.26.194.167,172.26.194.162,172.26.194.163,172.26.194.71,172.26.194.74,172.26.194.75,172.26.194.158,172.26.194.151,172.26.194.153,172.26.194.152,172.26.194.147,172.26.194.144,172.26.194.93,172.26.194.94,172.26.194.99,172.26.194.13,172.26.194.135,172.26.194.134,172.26.194.131,172.26.194.42,172.26.194.124,172.26.194.126,172.26.194.128,172.26.194.127,172.26.194.32,172.26.194.36,172.26.240.184,172.26.240.197,172.26.240.212,172.26.240.213,172.26.240.236,172.26.240.244,172.26.240.231"
+    title = title.replace(",", "\n")
+    print(title)
 
 
 if __name__ == '__main__':

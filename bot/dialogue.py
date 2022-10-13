@@ -84,15 +84,15 @@ def copyDialogue(workspace_id, version_id, old_cookie, cookie):
     pass
 
 
+# 更新对话ID
 def updateDia(cookie):
-    dialogueList = dialogue.getDialogueList(36660, 46374, cookie)
+    dialogueList = dialogue.getDialogueList(637620, 656789, cookie)
     for dialogue1 in dialogueList:
-        updateDialogue(dialogue1["id"], dialogue1["id"], 36660, 46374, cookie)
-
+        updateDialogue(dialogue1["id"], dialogue1["id"], 637620, 656789, cookie)
 
 
 if __name__ == '__main__':
     old_cookie = 'JSESSIONID=node04w0gsef2m6i0w9g9q7omt3ch937603.node0'
-    cookie = 'JSESSIONID=node019u7vc5kwklu21sb65vsx9kvtg96268.node0'
-    copyDialogue(20717, 23487, old_cookie, cookie)
-    # updateDia(cookie)
+    cookie = 'JSESSIONID=node011wd5ha4ikvw8jv4qvreto1nv3178787.node0'
+    # copyDialogue(20717, 23487, old_cookie, cookie)
+    updateDia(cookie)

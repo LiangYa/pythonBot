@@ -1,26 +1,22 @@
 import json
 import random
-import time
-
 import xlrd
 from numpy.compat import long
 
-import util
 from config import constants
 from config.settings import INDEX_START, INDEX_END, SHARE_NAME
 from service.dialogue_service import getDialogueIdByContext, getDialogueName
 from service.import_file_service import importFileService
 from util.comUtil import CommonUtil
-from util.logger import Logger
 from util.merge_cell_util import get_cell_type
 from dao import slot_dao
 
 
-# Excel导入流程
+# 静音轮询和打断轮询
 # 京东-新平台创建对话流程
 def createSlotsNew(workspace_id, version_id, cookie):
     readBook = xlrd.open_workbook(r'../excel/樊登新平台策略详情.xlsx')
-    sheetFaq = readBook.sheet_by_index(0)
+    sheetFaq = readBook.sheet_by_index(1)
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
     nodeDataArray = [
@@ -130,6 +126,13 @@ def createSlotsNew(workspace_id, version_id, cookie):
             replyCollects[reply_key] = answer
             curLink = addLinkData(pre_node_key, cur_node_key, name, attitude, dialogue_branch, dialogue_round)
             linkDataArray.append(curLink)
+        elif answer == '':
+            # 结果节点（跳转）
+            node_id = long(getDialogueIdByContext(workspace_id, version_id, content, cookie))
+            nodeDataEnd = addEndNode(cur_node_key, dialogue_branch, dialogue_round * 2, "JUMP_DIALOGUE", node_id)
+            nodeDataArray.append(nodeDataEnd)
+            curLink = addLinkData(pre_node_key, cur_node_key, name, attitude, dialogue_branch, dialogue_round)
+            linkDataArray.append(curLink)
         else:
             # 标签节点 + 结果节点(跳转)
             answer = "{}{}".format(answer, constants.LABEL_CONTINUE)
@@ -204,12 +207,16 @@ def addLinkData(from_key=None, to_key=None, desc="为空", title="", number=0, d
         express = '#if("${session.queryAttitude}" == "是") 1 #end'
         compare_type = "EQUALS"
         value = "1"
+    elif "打断轮询" in title:
+        express = '#if($!{isBreak} == true) 1 #end'
+        compare_type = "EQUALS"
+        value = "1"
     elif "FAQ" in title:
-        express = '#if("$!FaqResult.a" != "") 1 #end'
+        express = '#if("$!{FaqResult.a}" != "") 1 #end'
         if "高意向" in title:
-            express = '#if("$!FaqResult.a" != "" && $!{slot.share_high_interest.value} == 1) 1 #end'
+            express = '#if("$!{FaqResult.a}" != "" && $!{slot.share_high_interest.value} == 1) 1 #end'
         if "中意向" in title:
-            express = '#if("$!FaqResult.a" != "" && $!{slot.share_middle_interest.value} == 1) 1 #end'
+            express = '#if("$!{FaqResult.a}" != "" && $!{slot.share_middle_interest.value} == 1) 1 #end'
         compare_type = "EQUALS"
         value = "1"
     else:
@@ -322,7 +329,7 @@ def addSlotNode(name, k, dialogue_branch, dialogue_round):
 
 
 if __name__ == '__main__':
-    cookie = "JSESSIONID=node0gflqhr94ykth1weg2hy4c4lt1389980.node0"
+    cookie = "JSESSIONID=node0194ajmwm84xtj1d5eu7hii7tqk710941.node0"
     dealWorkspace(46051, 46052, 150284, cookie)
     # dealWorkspace(50468, 104126, 105755, cookie)
     # createSlotsNew()

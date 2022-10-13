@@ -21,7 +21,7 @@ def getDialogueList(workspace_id, version_id, cookie):
     Logger.info(logPredix)
     response = request_util.get(url, cookie)
     json = response.json()
-    Logger.info(json)
+    # Logger.info(json)
     return json["result"]
 
 

@@ -20,6 +20,16 @@ def createDialogue(workspace_id, version_id, dialogue_name, intent_id, cookie):
     return dialogue
 
 
+# 更新对话信息
+def updateDialogueInfo(workspace_id, version_id, cookie):
+    dialogueList = dialogue_dao.getDialogueList(workspace_id, version_id, cookie)
+    for dialogue in dialogueList:
+        if dialogue is None:
+            continue
+        dialogue_dao.updateDialogue(dialogue["id"], dialogue["id"], workspace_id, version_id, cookie)
+        Logger.info("dialogue_id:{}, dialogue_name:{}".format(dialogue["id"], dialogue["name"]))
+
+
 # 获取对话列表
 def getDialogueNew(workspace_id, version_id, dialogue_name, cookie):
     dialogueList = dialogue_dao.getDialogueList(workspace_id, version_id, cookie)
@@ -30,6 +40,14 @@ def getDialogueNew(workspace_id, version_id, dialogue_name, cookie):
             Logger.info("dialogue_id:{}, dialogue_name:{}".format(dialogue["id"], dialogue["name"]))
             break
     return dialogue_id
+
+
+def getAllDialogueIds(workspace_id, version_id, cookie):
+    dialogueList = dialogue_dao.getDialogueList(workspace_id, version_id, cookie)
+    ids = []
+    for i in range(0, len(dialogueList)):
+        ids.append(dialogueList[i]["id"])
+    return ids
 
 
 # 根据话术内容获取对话ID
@@ -53,6 +71,6 @@ def getDialogueName(context):
 
 if __name__ == '__main__':
     cookie = "JSESSIONID=node018srjpu2kwxm11ikflal8aevwc330973.node0"
-    node_id = getDialogueIdByContext(74915, 74916, "【主流程-开产环2】", cookie)
+    node_id = getDialogueIdByContext(74915, 74916, "【引导加微环节-挂机】|【常规首句】", cookie)
     print(node_id)
     pass
