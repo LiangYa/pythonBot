@@ -19,8 +19,9 @@ from dao import slot_dao
 # Excel导入流程
 # 京东-新平台创建对话流程
 def createSlotsNew(workspace_id, version_id, cookie):
-    readBook = xlrd.open_workbook(r'../excel/京东BOT.xlsx')
-    sheetFaq = readBook.sheet_by_index(4)
+    readBook = xlrd.open_workbook(r'../excel/360BOT.xlsx')
+    # sheetFaq = readBook.sheet_by_index(4)
+    sheetFaq = readBook.sheet_by_name("首轮沟通B-有减免标")
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
     nodeDataArray = [
@@ -96,9 +97,9 @@ def createSlotsNew(workspace_id, version_id, cookie):
         answer = impFileService.buildAnswerInfo(number, content, label, label2, action)
         if number != '' and constants.ACTION_END not in action:
             # FAQ轮询1次拦截
-            if "FAQ轮询1次" in attitude:
-                answer = impFileService.jumpPreNodeTwoFAQ(answer, replyCollects, cur_node_key+1)
-                continue
+            # if "FAQ轮询1次" in attitude:
+            #     answer = impFileService.jumpPreNodeTwoFAQ(answer, replyCollects, cur_node_key+1)
+            #     continue
             # 1.槽位节点
             # 1.1创建下一个槽位
             if next_node_key is None:
@@ -300,6 +301,7 @@ def dealWorkspace(workspace_id, version_id, dialogue_id, cookie):
             # if reply.find(pattern) > 0:
             #     slot = slot_dao.createSlot(data, reply, workspace_id, version_id, dialogue_id, cookie, True)
             # else:
+            # reply = "{}{}".format(reply, "\n[转人工]@@transfer@@{transfer_success-QLC52||那您不要挂电话，马上为您转接@@notbreak@@}")
             slot = slot_dao.createSlot(data, reply, workspace_id, version_id, dialogue_id, cookie, False)
             data["id"] = slot["slot"]["id"]
     # 添加槽位和结束节点
@@ -345,8 +347,8 @@ def addSlotNode(name, k, dialogue_branch, dialogue_round):
 
 
 if __name__ == '__main__':
-    cookie = "JSESSIONID=node0f9fuk631raguk71ag025grno44808.node0"
-    dealWorkspace(8660, 587167, 652058, cookie)
+    cookie = "JSESSIONID=node0kzo2hapkj1yq1qf56bl77lpvf6748392.node0"
+    dealWorkspace(291166, 447371, 725652, cookie)
     # dealWorkspace(50468, 104126, 105755, cookie)
     # createSlotsNew()
 

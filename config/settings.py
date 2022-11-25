@@ -20,9 +20,9 @@ if ONLINE is True:
     SALE_XI_AI = "http://172.26.5.106"
 
 RECORD_ROUND = "1C"
-INDEX_START = 53
-INDEX_END = 58
-SHARE_NAME = "noneed"
+INDEX_START = 142
+INDEX_END = 147
+SHARE_NAME = "child_handle_noneed"
 # COOKIE = "JSESSIONID=node0y4nfzlc7qo8zelxb6qxi8gp4869131.node0"
 
 BASE_DIR = Path(__file__).resolve().parent.parent

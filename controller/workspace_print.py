@@ -8,13 +8,13 @@ from util.operate_excel import OperateExcel
 
 def dealWorkspace(commUtil=None, impFileService=None):
     operateExcel = OperateExcel()
-    readBook = xlrd.open_workbook(r'../excel/MT-美团发卡预测试bot.xlsx')
+    readBook = xlrd.open_workbook(r'../excel/ToB加微策略详情.xlsx')
     sheetFaq = readBook.sheet_by_index(0)
-    # sheetFaq = readBook.sheet_by_name("减免A-1call-白条")
+    # sheetFaq = readBook.sheet_by_name("FAQ-1025")
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
     impFileService = importFileService()
-    for i in range(7, 8):
+    for i in range(4, 5):
         attitude = sheetFaq.cell(i, 6).value
         number = sheetFaq.cell(i, 7).value
         label = sheetFaq.cell(i, 9).value
@@ -41,68 +41,41 @@ def dealWorkspace(commUtil=None, impFileService=None):
     pass
 
 
-def dealWorkspaceRound(index_start, index_end):
+def dealWorkspaceNew(start_index, end_index):
     operateExcel = OperateExcel()
-    readBook = xlrd.open_workbook(r'../excel/美团加微-22年5月.xlsx')
-    sheetFaq = readBook.sheet_by_index(0)
-    # sheetFaq = readBook.sheet_by_name("新版轮询-5.10")
+    readBook = xlrd.open_workbook(r'../excel/MT-美团电销发卡bot 策略.xlsx')
+    # sheetFaq = readBook.sheet_by_index(0)
+    sheetFaq = readBook.sheet_by_name("MT-美团电销发卡江苏银行单独流程版本0907评分卡")
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
     impFileService = importFileService()
-    roundStr = ""
-    for i in range(index_start-1, index_end):
-        attitude = sheetFaq.cell(i, 6).value
-        number = sheetFaq.cell(i, 7).value
-        label = sheetFaq.cell(i, 9).value
-        content = sheetFaq.cell(i, 8).value
-        action = sheetFaq.cell(i, 11).value
+    for i in range(start_index, end_index):
+        number = sheetFaq.cell(i, constants.FLOW_RECORD_NUMBER).value
+        label = sheetFaq.cell(i, constants.FLOW_LABEL_USER).value
+        content = sheetFaq.cell(i, constants.FLOW_WORDS).value
+        action = sheetFaq.cell(i, constants.FLOW_LABEL_ACTION).value
         merged = sheetFaq.merged_cells
-        label2 = get_cell_type(i, 4, merged, sheetFaq)
+        label2 = get_cell_type(i, constants.FLOW_LABEL_NODE, merged, sheetFaq)
         # name1 = get_cell_type(i, 1, merged, sheetFaq)
         # name = commUtil.creatName(attitude)
         answer = impFileService.buildAnswerInfo(number, content, label, label2, action)
-        if number != '' and "FAQ轮询" in attitude:
-            att_num = str(attitude).replace("FAQ轮询", "")
-            if "1" in att_num:
-                roundStr = "#if({} && {} == {})\n\t{}".format('"$!FaqResult.a" != ""', "${globalVisitTime}", att_num, answer)
-            else:
-                roundStr = "{}\n#elseif({} && {} == {})\n\t{}".format(roundStr, '"$!FaqResult.a" != ""', "${globalVisitTime}", att_num, answer)
-        elif number != '' and "静音轮询" in attitude:
-            roundStr = "#if({} == 1)\n\t{}".format("${globalVisitTime}", answer)
-        elif number != '' and constants.ACTION_END not in action:
+        if number != '' and constants.ACTION_END not in action:
             # 1.2.1 添加判断跳过上一个节点
-            answer = impFileService.jumpPreNode(answer, "分流_32")
+            answer = impFileService.jumpPreNode(answer, "分流_99")
         elif number != '' and constants.ACTION_END in action:
             if constants.ACTION_BREAK in action:
                 answer = "{}{}".format(answer, constants.LABEL_BREAK_END)
+                answer = impFileService.jumpPreNode(answer, "分流_99")
             else:
                 answer = "{}{}".format(answer, constants.LABEL_END)
         else:
             answer = "{}{}".format(answer, constants.LABEL_CONTINUE)
         # print(i)
-        if answer != '':
-            print(answer)
-            pass
-    roundStr = "{}\n#else\n\t@continue@\n#end".format(roundStr)
-    print(roundStr)
+        print(answer)
     pass
 
 
-def dealWork():
-    readBook = xlrd.open_workbook(r'../excel/20220826210421.xlsx')
-    sheetFaq = readBook.sheet_by_index(0)
-    eenen = ''
-    num = 0
-    for i in range(1, 19155):
-        attitude = sheetFaq.cell(i, 0).value
-        if "京东(无感)" in attitude:
-            eenen = "{},{}".format(eenen, int(sheetFaq.cell(i, 1).value))
-            num = num + 1
-    print(eenen)
-    print(num)
-
-
 if __name__ == '__main__':
-    # dealWorkspaceRound(223, 223)
-    dealWorkspace()
+    dealWorkspaceNew(204, 205)
+    # dealWorkspace()
     # dealWork()

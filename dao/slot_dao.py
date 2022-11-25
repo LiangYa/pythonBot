@@ -1,6 +1,7 @@
 import json
 import time
 
+from service.entity_service import entityService
 from util import request_util
 from config.settings import DM_IP_NEW, DM_IP_OLD, DM_IP_OLD_TWO
 from util.logger import Logger
@@ -256,6 +257,18 @@ def createSlot(slot_info, init_reply, workspace_id, version_id, dialogue_id, coo
         "voiceBroadType": 1,
         "voiceContent": ""
     }
+    # if str(slot_info["entityName"]) == "FAQ意图" or "分流" in slot_info["text"]:
+    if "分流" in slot_info["text"]:
+        # 添加FAQ意图实体
+        entSer = entityService(cookie)
+        entityList = entSer.getEntityList(workspace_id)
+        if entityList is not None and len(entityList) >= 0:
+            for entity in entityList:
+                if entity["name"] == "FAQ意图":
+                    slot["entityId"] = str(entity["id"])
+                    slot["optional"] = False
+                    slot["identity"] = slot_info["identity"]
+        pass
     if str(slot_info["text"]) == "记录开始" or "直接转人" in str(slot_info["text"]):
         fillSlotActionVO = {
             "actionTargetSystem": "BUSINESS_SYSTEM",
@@ -288,6 +301,7 @@ def createSlot(slot_info, init_reply, workspace_id, version_id, dialogue_id, coo
     Logger.info(data)
     response = request_util.post_json(url, data, cookie)
     # Logger.info(response.json())
+    time.sleep(2)
     return response.json()["result"]
 
 

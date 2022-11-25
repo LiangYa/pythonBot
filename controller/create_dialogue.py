@@ -19,9 +19,10 @@ def updateDialogueAndDesc(workspace_id, version_id, cookie):
 
 # 主函数执行
 if __name__ == '__main__':
-    cookie = "JSESSIONID=node0eph1qs77s8nm1mp6ckq7n0rh04075277.node0"
-    name = "其他意图"
+    cookie = "JSESSIONID=node01h0tse3lppqmy6iziuetrk2b84623442.node0"
+    name = "返回主流程"
     # dialogue = createDialogueAndIntent(74690, 520877, name, cookie)
-    # updateDialogueAndDesc(74690, 520877, cookie)
-    dialogue = createDialogueAndIntent(345775, 101904, name, cookie)
+    # updateDialogueAndDesc(680383, 620922, cookie)
+    dialogue = createDialogueAndIntent(586840, 399835, name, cookie)
+    # dialogue = createDialogueAndIntent(661490, 661491, name, cookie)
     # Logger.info(dialogue)

@@ -62,8 +62,28 @@ def get_complain11():
         f.write(complain_str)
 
 
+def get_complain22():
+    complain_str = ""
+    dm_url = "http://47.92.193.147:10301/case/getBySessionId?sessionId={}"
+    with open("../excel/34.csv", "r") as f:
+        reader = csv.reader(f)
+        for row in reader:
+            sessionId = row[0]
+            if sessionId:
+                try:
+                    dm_content_json = json.loads(requests.get(dm_url.format(sessionId)).text)
+                    if dm_content_json['identity']:
+                        complain_str = "{},'{}'".format(complain_str, sessionId)
+                except Exception as e:
+                    print("{} not get dm context".format(sessionId))
+    print("完成！：{}".format(complain_str))
+    # with open("{}_complain.txt".format("25-29"), 'a+') as f:
+    #     f.write(complain_str)
+
+
+
 if __name__ == "__main__":
-    get_complain11()
+    get_complain22()
 
 
 

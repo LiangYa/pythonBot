@@ -19,8 +19,9 @@ from dao import slot_dao
 # Excel导入流程
 # 京东-新平台创建对话流程
 def createSlotsNew(workspace_id, version_id, cookie):
-    readBook = xlrd.open_workbook(r'../excel/话术流程文档规范-版本二.xlsx')
-    sheetFaq = readBook.sheet_by_index(1)
+    readBook = xlrd.open_workbook(r'../excel/度小满新流程-STC-1call.xlsx')
+    # sheetFaq = readBook.sheet_by_index(0)
+    sheetFaq = readBook.sheet_by_name("度小满新流程-STC-1call")
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
     nodeDataArray = [
@@ -30,7 +31,7 @@ def createSlotsNew(workspace_id, version_id, cookie):
             "figure": "RoundedRectangle",
             "type": "DIALOGUE",
             "parameter1": 100,
-            "loc": "325 0",
+            "loc": "310 0",
             "key": -1
         },
         {
@@ -41,7 +42,7 @@ def createSlotsNew(workspace_id, version_id, cookie):
             "fill": "#FAD165",
             "parameter1": 100,
             "key": -2,
-            "loc": "325 125"
+            "loc": "310 150"
         }
     ]
     linkDataArray = [
@@ -94,13 +95,14 @@ def createSlotsNew(workspace_id, version_id, cookie):
         else:
             dialogue_branch = dialogue_branch + 1
         answer = impFileService.buildAnswerInfo(number, content, label, label2, action)
-        if number != '' and constants.ACTION_END not in action:
+        if (number != '' and constants.ACTION_END not in action) or \
+                (number != '' and constants.ACTION_END in action and constants.ACTION_BREAK in action):
             # 1.槽位节点
             # 1.1创建下一个槽位
             if next_node_key is None:
                 next_node_name = "分流_{}".format(random.randint(1, 100))
                 next_node_key = cur_node_key
-                nextData = addSlotNode(next_node_name, next_node_key, dialogue_branch, dialogue_round * 2 + 1)
+                nextData = addSlotNode(next_node_name, next_node_key, dialogue_branch, dialogue_round * 2 + 1, dialogue_round)
                 nodeDataArray.append(nextData)
                 reply_key = next_node_name + str(next_node_key)
                 replyCollects[reply_key] = ""
@@ -111,11 +113,14 @@ def createSlotsNew(workspace_id, version_id, cookie):
             reply_key = name + str(cur_node_key)
             # 1.2.1 添加判断跳过上一个节点
             answer = impFileService.jumpPreNode(answer, pre_node_name)
+            if number != '' and constants.ACTION_END in action and constants.ACTION_BREAK in action:
+                answer = "{}{}".format(answer.replace("#end", ""), constants.LABEL_BREAK_END)
+                answer = "{}{}".format(answer, "\n#end")
             replyCollects[reply_key] = answer
             # 1.3建立关系-上一个节点和当前关系，当前节点和下一个节点关系
             curLink = addLinkData(pre_node_key, cur_node_key, name, attitude, dialogue_branch,
                                   dialogue_round=dialogue_round)
-            nextLink = addLinkData(cur_node_key, next_node_key, "", "", 0)
+            nextLink = addLinkData(cur_node_key, next_node_key, "", "", 0, 0)
             linkDataArray.append(curLink)
             linkDataArray.append(nextLink)
         elif number != '' and constants.ACTION_END in action:
@@ -150,16 +155,16 @@ def createSlotsNew(workspace_id, version_id, cookie):
             # 转人工
             dialogue_name = getDialogueName(content)
             interface_name = ""
-            if dialogue_name is not None and "实时转接" == dialogue_name:
-                transferName = "直接转人{}".format(random.randint(1, 100))
-                transferData = addSlotNode(transferName, cur_node_key, dialogue_branch, dialogue_round * 2 + 0.5)
-                nodeDataArray.append(transferData)
-                reply_key = transferName + str(cur_node_key)
-                replyCollects[reply_key] = ""
-                transferLink = addLinkData(cur_node_key+1, cur_node_key, "", "", 0)
-                linkDataArray.append(transferLink)
-                cur_node_key = cur_node_key - 1
-                interface_name = "接口调用"
+            # if dialogue_name is not None and "实时转接" == dialogue_name:
+            #     transferName = "直接转人{}".format(random.randint(1, 100))
+            #     transferData = addSlotNode(transferName, cur_node_key, dialogue_branch, dialogue_round * 2 + 0.5)
+            #     nodeDataArray.append(transferData)
+            #     reply_key = transferName + str(cur_node_key)
+            #     replyCollects[reply_key] = ""
+            #     transferLink = addLinkData(cur_node_key+1, cur_node_key, "", "", 0)
+            #     linkDataArray.append(transferLink)
+            #     cur_node_key = cur_node_key - 1
+            #     interface_name = "接口调用"
             node_id = long(getDialogueIdByContext(workspace_id, version_id, content, cookie))
             nodeDataEnd = addEndNode(cur_node_key, dialogue_branch, dialogue_round * 2 + 1, "JUMP_DIALOGUE", node_id)
             nodeDataArray.append(nodeDataEnd)
@@ -187,6 +192,12 @@ def addLinkData(from_key=None, to_key=None, desc="为空", title="", number=0, d
         express = '#if($!session.query == "@@quiet@@") 1 #end'
         compare_type = "EQUALS"
         value = "1"
+    elif "其他" in title or "无明确回应" in title:
+        express = "1"
+        value = "1"
+        compare_type = "EQUALS"
+        # number = 0
+        desc = ""
     elif ("其他" in title and "其他平台" not in title) or "无明确回应" in title or title == "" or title == '' or title is None:
         desc = "为空"
         if "其他" in title and "男" in title:
@@ -284,11 +295,14 @@ def dealWorkspace(workspace_id, version_id, dialogue_id, cookie):
             # 添加单个槽位
             reply_key = "{}{}".format(data["text"], data["key"])
             reply = replyCollects[reply_key]
-            pattern = "$!{slot.share_company.value.round}C"
-            slot = None
-            # if reply.find(pattern) > 0:
-            #     slot = slot_dao.createSlot(data, reply, workspace_id, version_id, dialogue_id, cookie, True)
-            # else:
+            transfer_one = "@@transfer@@{transfer_success-MTC34||好的，您不要挂机哦，马上为您服务@@notbreak@@}"
+            transfer_two = "@@transfer@@{transfer_success-$!{slot.share_faqrs.value}MTC35||您不要挂机哈，专业的客户经理马上为您服务@@notbreak@@}"
+            if "主流程【有坐席接起】】" in reply:
+                reply = reply.replace("【主流程【有坐席接起】】", "")
+                reply = reply.replace("#end", "{}\n#end".format(transfer_one))
+            elif "【命中FAQ【有坐席接起】】" in reply:
+                reply = reply.replace("【命中FAQ【有坐席接起】】", "")
+                reply = reply.replace("#end", "{}\n#end".format(transfer_two))
             slot = slot_dao.createSlot(data, reply, workspace_id, version_id, dialogue_id, cookie, False)
             data["id"] = slot["slot"]["id"]
     # 添加槽位和结束节点
@@ -313,13 +327,13 @@ def addEndNode(k, dialogue_branch, dialogue_round, node_type="LEAF", node_id=-2)
         "fill": "#6FE8E8",
         "parameter1": 100,
         "key": k,
-        "loc": "{} {}".format(dialogue_branch * 125 + 200, dialogue_round * 125)
+        "loc": "{} {}".format(dialogue_branch * 110 + 200, dialogue_round * 150)
     }
     return nodeData
 
 
 # 加槽位节点
-def addSlotNode(name, k, dialogue_branch, dialogue_round):
+def addSlotNode(name, k, dialogue_branch, dialogue_round, known_key=0):
     nodeData = {
         "text": name,
         "id": -2,
@@ -328,15 +342,15 @@ def addSlotNode(name, k, dialogue_branch, dialogue_round):
         "fill": "#FAD165",
         "parameter1": 100,
         "key": k,
-        "loc": "{} {}".format(dialogue_branch * 125 + 200, dialogue_round * 125)
+        "loc": "{} {}".format(dialogue_branch * 110 + 200, dialogue_round * 150)
     }
+    if known_key != 0:
+        nodeData["identity"] = "share_" + SHARE_NAME + "_" + constants.KNOWN[known_key+1]
     return nodeData
 
 
 if __name__ == '__main__':
-    cookie = "JSESSIONID=node0tc13xa66f7q91vwstocgynhrd1502646.node0"
-    dealWorkspace(545632, 545633, 520240, cookie)
-    # dealWorkspace(50468, 104126, 105755, cookie)
-    # createSlotsNew()
+    cookie = "JSESSIONID=node0bb1ero5axst2ii3pca3cbcv75109272.node0"
+    dealWorkspace(545632, 656453, 727781, cookie)
 
 

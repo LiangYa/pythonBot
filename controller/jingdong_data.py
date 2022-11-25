@@ -122,6 +122,8 @@ import json
 #         datas["是否本人"] = get_outbound_type_by_id(customer_id, phone)
 #
 #     datas.to_csv(file_name.replace(".csv","_new.csv"), index=False)
+import tqdm
+
 
 def get_complain(start_time, end_time):
     connection = pymysql.connect(host="39.103.215.119",
@@ -131,10 +133,16 @@ def get_complain(start_time, end_time):
                                  db="ods_outbound_call_platform",
                                  charset='utf8mb4',
                                  cursorclass=pymysql.cursors.DictCursor)
-    sql = "select call_case_id, dm_session_id, id from " \
-          "outbound_call_result where intent_id = 10083 " \
-          "and call_start_time > '{}' and call_end_time < '{}' " \
-          "and call_status in ('normalConnection' , 'dmError', 'dmTimeOut') ".format(start_time, end_time)
+    # sql = "select call_case_id, dm_session_id, id from " \
+    #       "outbound_call_result where intent_id = 10083 " \
+    #       "and call_start_time > '{}' and call_end_time < '{}' " \
+    #       "and call_status in ('normalConnection' , 'dmError', 'dmTimeOut') ".format(start_time, end_time)
+
+    sql = "select t.dm_session_id, t.call_case_id, t.answer_time from (select id from outbound_call_case where intent_id = 10083) rs, " \
+          "outbound_call_result t, outbound_call_collection_result c " \
+          "where rs.id = t.call_case_id and t.id = c.id and t.call_status = 'normalConnection' and t.call_type = 3 and t.call_start_time >= '{}' " \
+          "and t.call_start_time <= '{}' and c.authentication in {} and t.state = 10 ".format(start_time,
+                                                                                                      end_time, 1)
     print(sql)
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -146,7 +154,7 @@ def get_complain(start_time, end_time):
     # dm_url = "http://172.26.2.56:8636/report/getDetailedRecord/?sessionId={}"
     # dm_url = "http://8.142.85.77:8630/report/getDetailedRecord/?sessionId={}&workSpaceId=8660"
     dm_url = "http://172.26.2.56:8630/report/getDetailedRecord/?sessionId={}&workSpaceId=8660"
-    for data in datas:
+    for data in tqdm.tqdm(datas):
         print("handle [{}]".format(index))
         print(dm_url.format(data["dm_session_id"]))
         try:
@@ -154,7 +162,7 @@ def get_complain(start_time, end_time):
             # dm_content_json = json.loads(requests.get(dm_url.format("32439076444651957516612169040524724")).text)
             labels = []
             for d in dm_content_json['result']:
-                if d['msgContent'] and "投诉" in d['msgContent']:
+                if d['msgContent'] and ("欠了多少钱" in d['msgContent'] and "F121" in d['msgContent']):
                     complain_data.append("{},{},{}".format(data['dm_session_id'],
                                                            data["call_case_id"], d["msgContent"]))
                     complain_str = "{},'{}'".format(complain_str, data['dm_session_id'])
@@ -180,8 +188,8 @@ if __name__ == "__main__":
     # get_outbound_type(file_name)
     import datetime
     import threading
-    start_time = "2022-08-25 00:00:00"
-    end_time = "2022-08-29 23:59:59"
+    start_time = "2022-10-01 00:00:00"
+    end_time = "2022-10-31 23:59:59"
     thread_list = []
     for i in range(0, 1):
         print(start_time)
