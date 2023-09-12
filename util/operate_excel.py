@@ -112,6 +112,18 @@ class OperateExcel(object):
         }
         info_list.append(faq_dict)
 
+    @staticmethod
+    def define_excel_format_test(info_type, faq_title, faq_question, faq_answer, faq_content, info_list):
+        faq_dict = {
+            "话术标签": info_type,
+            "话术编号": faq_title,
+            "请求话术": faq_question,
+            "录音编号": faq_answer,
+            "场景话术": faq_content,
+            "备注": "",
+        }
+        info_list.append(faq_dict)
+
     def createFile(self, file_path):
         if os.path.exists(file_path) is False:
             os.makedirs(file_path)

@@ -4,12 +4,14 @@ SORT_COMMON = "普通类FAQ"
 SORT_QUERY = "询问加微信相关FAQ"
 SORT_HIGH = "高意向FAQ"
 SORT_MIDDLE = "中意向FAQ"
+SORT_LOW = "低意向FAQ"
 
 FAQ_SORT_COMPLAINT = "【@@complaintFaq@@】"
 FAQ_SORT_COMMON = "【@@commonFaq@@】"
 FAQ_SORT_QUERY = "【@@queryFaq@@】"
 FAQ_SORT_HIGH = "【@@highIntention@@】"
 FAQ_SORT_MIDDLE = "【@@middleIntention@@】"
+FAQ_SORT_LOW = "【@@lowIntention@@】"
 
 # FAQ-分类 - end
 
@@ -20,6 +22,7 @@ ACTION_SEND_SMS = "同意发加微短信"
 ACTION_ADD_WECHAT = "同意加微信小码"
 ACTION_QUIET = "静音"
 ACTION_SEND_SMS_COM = "发短信"
+ACTION_SEND_SMS_COM_M = "发短信:"
 
 LABEL_END = "@@end@@@@notbreak@@"  # 挂机
 LABEL_BREAK_END = "@@end@@"  # 挂机 打断
@@ -27,7 +30,7 @@ LABEL_SEND_SMS = "同意发加微短信"  # 发短信
 LABEL_ADD_WECHAT = "同意加微信小码"  # 加微信
 LABEL_QUIET = "@no_handle_quiet@"  # 静音
 LABEL_CONTINUE = "@continue@"  #
-LABEL_SEND_SMS_COM = "#message#"  # 发短信 普通
+LABEL_SEND_SMS_COM = "发短信"  # 发短信 普通
 # LABEL_SEND_SMS_COM = "发短信"  # 发短信 普通
 
 # 共用标签
@@ -36,7 +39,8 @@ LABEL_COMMON = {
     "高意向": "高意向",
     "加黑名单": "加黑名单",
     "意向加微用户": "意向加微用户",
-    "同意发优惠券": "同意发优惠券"
+    "同意发优惠券": "同意发优惠券",
+    "发短信:达尔文7号": "发短信:达尔文7号"
 }
 
 # 贷后标签
@@ -57,8 +61,98 @@ LABEL_LOAN = {
     "有还款意愿": "有还款意愿"
 }
 
+
+# 共用标签
+LABEL_TTS = {
+    "xiai": "XA",
+    "shutingB": "STB",
+    "nuonan": "NN",
+    "wuhaoA": "WHA",
+    "xiaotongY": "XTY",
+    "shutingQ": "STQ",
+    "shutingS": "STS",
+    "jiaoxiaotongtest": "JXTTEST",
+    "shutingA": "STA",
+    "shutingN": "STN",
+    "shutingR": "STR",
+    "xiaotongW": "XTW",
+    "shitong": "STO",
+    "shutingK": "STK",
+    "siyang": "SY",
+    "jiaoxiaotong": "JXT",
+    "xiaotongEE": "XTEE",
+    "xiaotongQ": "XTQ",
+    "ningbo": "NB",
+    "yitingA": "YTA",
+    "xiaotongU": "XTU",
+    "qiqi": "QQ",
+    "xiaotongF": "XTF",
+    "xiaotongN": "XTN",
+    "xiaoyu": "XY",
+    "shutingG": "STG",
+    "xiaotongC": "XTC",
+    "xiaotongZ": "XTZ",
+    "xiaotongCC": "XTCC",
+    "shutingM": "STM",
+    "xiaotongS": "XTS",
+    "shutingJ": "STJ",
+    "xiaotongL": "XTL",
+    "shutingV": "STV",
+    "xiaotongAA": "XTAA",
+    "xttest": "XTTEST",
+    "xiaotongE": "XTE",
+    "xiaotongM": "XTM",
+    "shuting": "ST",
+    "xiaotongJ": "XTJ",
+    "xiaotongP": "XTP",
+    "houyu": "HY",
+    "xiaotongG": "XTG",
+    "xiaotongT": "XTT",
+    "xiaotongB": "XTB",
+    "xiaoqinA": "XQA",
+    "test": "TEST",
+    "tongyong": "TY",
+    "shutingU": "STU",
+    "xiaotongDD": "XTDD",
+    "xiaotong": "XT",
+    "shutingE": "STE",
+    "shutingI": "STI",
+    "shutingT": "STT",
+    "shitongA": "STOA",
+    "shutingP": "STP",
+    "ziyun": "ZY",
+    "shutingH": "STH",
+    "xiaotongI": "XTI",
+    "shutingX": "STX",
+    "xintong": "ZXT",
+    "wuhao": "WH",
+    "xiaotongD": "XTD",
+    "xiaotongK": "XTK",
+    "yitingB": "YTB",
+    "shutingL": "STL",
+    "xiaotongH": "XTH",
+    "shutingC": "STC",
+    "xiaoqin": "XQ",
+    "xiaotongR": "XTR",
+    "shutingY": "STY",
+    "liushitongtest": "LSTTEST",
+    "xiaotongA": "XTA",
+    "shutingF": "STF",
+    "yiting": "YT",
+    "xiaotongBB": "XTBB",
+    "liushitong": "LST",
+    "shutingD": "STD",
+    "xiaotongV": "XTV",
+    "zhaoshijie": "SJ",
+    "shutingW": "STW"
+}
+
 # 动作标签 - end
 
+# 分类标签
+SORTS_LOAN = {
+    "低意向FAQ": "【@@lowIntention@@】"
+}
 
 SURNAME = "$!{slot.share_userinfo.value.familyName}"
 NAME = "$!{slot.share_userinfo.value.sexByChineseWord}"

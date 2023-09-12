@@ -39,3 +39,17 @@ def getIntentList(workspace_id, version_id, cookie):
     json = response.json()
     Logger.info(json)
     return json["result"]
+
+
+def addIntentOld(name, description, workspace_id, cookie):
+    url = "{}/config/intent/add".format(DM_IP_OLD)
+    logPredix = "[意图-新平台][添加意图]{}".format(url)
+    Logger.info(logPredix)
+    data = {
+        "name": name,
+        "description": description,
+        "workspaceId": workspace_id
+    }
+    response = request_util.post(url, data, cookie)
+    Logger.info(response.json())
+    return response.json()["result"]

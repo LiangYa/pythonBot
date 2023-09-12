@@ -41,6 +41,21 @@ def addDialogue(name, description, workspace_id, version_id, cookie):
     return response.json()["result"]
 
 
+# 旧平台-添加对话
+def addDialogueOld(name, description, workspace_id, cookie):
+    url = "{}/config/dialogue/add".format(DM_IP_OLD)
+    data = {
+        "name": name,
+        "description": description,
+        "workspaceId": workspace_id
+    }
+    logPredix = "[对话-旧平台][添加对话]{} data={}".format(url, data)
+    Logger.info(logPredix)
+    response = request_util.post(url, data, cookie)
+    Logger.info(response.json())
+    return response.json()["result"]
+
+
 # 新平台-更新对话的描述详情
 def updateDialogue(dialogue_id, description, workspace_id, version_id, cookie):
     url = "{}/configNew/dialogue/updateDescription".format(DM_IP_NEW)
@@ -51,6 +66,20 @@ def updateDialogue(dialogue_id, description, workspace_id, version_id, cookie):
             "versionId": version_id,
         }
     logPredix = "[对话-新平台][更新对话的描述详情]{} data={}".format(url, data)
+    Logger.info(logPredix)
+    response = request_util.post(url, data, cookie)
+    Logger.info(response.json())
+
+
+# 旧平台-更新对话的描述详情
+def updateDialogueOld(dialogue_id, description, workspace_id, cookie):
+    url = "{}/config/dialogue/updateDescription".format(DM_IP_OLD)
+    data = {
+            "id": dialogue_id,
+            "description": description,
+            "workspaceId": workspace_id,
+        }
+    logPredix = "[对话-旧平台][更新对话的描述详情]{} data={}".format(url, data)
     Logger.info(logPredix)
     response = request_util.post(url, data, cookie)
     Logger.info(response.json())
@@ -67,6 +96,21 @@ def addRelationShipIntentAndDialogue(dialogue_id, intend_id, workspace_id, versi
         "versionId": version_id,
     }
     logPredix = "[对话-新平台][添加意图和对话关系]{} data={}".format(url, data)
+    Logger.info(logPredix)
+    response = request_util.post(url, data, cookie)
+    Logger.info(response.json())
+
+
+# 旧平台-添加意图和对话关系
+def addRelationShipIntentAndDialogueOld(dialogue_id, intend_id, workspace_id, cookie):
+    url = "{}/config/dialogueAccess/add".format(DM_IP_OLD)
+    data = {
+        "dialogueId": dialogue_id,
+        "accessType": 'INTENT',
+        "accessId": intend_id,
+        "workspaceId": workspace_id,
+    }
+    logPredix = "[对话-旧平台][添加意图和对话关系]{} data={}".format(url, data)
     Logger.info(logPredix)
     response = request_util.post(url, data, cookie)
     Logger.info(response.json())

@@ -18,6 +18,6 @@ def copyEntityByWorkspaceId(old_workspace_id, target_workspace_id, cookie):
 
 
 if __name__ == '__main__':
-    cookie = "JSESSIONID=node0ip8z8nq37ysa42rtw4k35qrl5208513.node0"
+    cookie = "JSESSIONID=node019f07h6rog4m41dgvc5sgpzwy01427639.node0"
     # copyEntityByWorkspaceId(545632, 575712)
-    copyEntityByWorkspaceId(661923, 661490, cookie)
+    copyEntityByWorkspaceId(545632, 1157087, cookie)

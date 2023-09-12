@@ -145,6 +145,8 @@ def replaceFAQ_JK(old_cookie):
     print("high:{}, mid:{}".format(1, 2))
 
 
+
+
 if __name__ == '__main__':
     old_cookie = 'JSESSIONID=node0g1o471yt9v1yf5auoyothnoc9377206.node0'
     replaceFAQ(350, old_cookie)

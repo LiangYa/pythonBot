@@ -7,18 +7,36 @@ from util.operate_excel import OperateExcel
 from service.import_file_service import importFileService
 
 
+# 去重
+def dealRepeat():
+    operateExcel = OperateExcel()
+    readBook = xlrd.open_workbook(r'../excel/FAQ_workspace1.xlsx')
+    sheetFaq = readBook.sheet_by_index(0)
+    namestr = ""
+    j = 0
+    for i in range(0, 716):
+        name = sheetFaq.cell(i, 0).value
+        if name in namestr:
+            continue
+        else:
+            namestr = "{}{}".format(namestr, name)
+            j = j+1
+    print(namestr)
+    print(j)
+
+
 # 新平台-京东加微
 def dealFAQ():
     labelUtil = importFileService()
     operateExcel = OperateExcel()
-    readBook = xlrd.open_workbook(r'../excel/度小满新流程-STC-1call.xlsx')
-    sheetFaq = readBook.sheet_by_name("FAQ-通用")
+    readBook = xlrd.open_workbook(r'../excel/金条-拉新激活纯机-淑婷版-0905.xlsx')
+    sheetFaq = readBook.sheet_by_name("FAQ")
     # sheetFaq = readBook.sheet_by_index(1)
     sheetWorkspaceList = []
     sheetVersionList = []
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
-    for i in range(1, 80):
+    for i in range(1, 118):
         recordNumber = sheetFaq.cell(i, 1).value  # 录音编号
         userLabel = sheetFaq.cell(i, 2).value  # 用户标签
         sceneTalk = sheetFaq.cell(i, 3).value  # 场景话术
@@ -30,6 +48,7 @@ def dealFAQ():
         faqSort = ""  # 分类
         if ncols > 6:
             faqSort = sheetFaq.cell(i, 6).value  # 分类
+        beizhu = None
         if ncols > constants.FLOW_WORDS:
             beizhu = sheetFaq.cell(i, constants.FLOW_WORDS).value  # 备注
         answer = ""
@@ -50,7 +69,8 @@ def dealFAQ():
             if constants.ACTION_SEND_SMS in actionLabel:
                 answer = "[{}]{}".format(constants.LABEL_SEND_SMS, answer)
             # 发短信
-            if constants.ACTION_SEND_SMS_COM in actionLabel or constants.LABEL_SEND_SMS_COM in actionLabel:
+            if (constants.ACTION_SEND_SMS_COM in actionLabel or constants.LABEL_SEND_SMS_COM in actionLabel) \
+                    and constants.ACTION_SEND_SMS_COM_M not in actionLabel:
                 answer = "[{}]{}".format(constants.LABEL_SEND_SMS_COM, answer)
             # 添加FAQ分类
             if constants.SORT_COMPLAINT in faqSort:
@@ -63,7 +83,8 @@ def dealFAQ():
                 answer = "{}{}".format(answer, constants.FAQ_SORT_HIGH)
             elif constants.SORT_MIDDLE in faqSort:
                 answer = "{}{}".format(answer, constants.FAQ_SORT_MIDDLE)
-            if "转人成功不播报" in beizhu:
+            answer = "{}{}".format(labelUtil.add_sort_label(faqSort), answer)
+            if beizhu and "转人成功不播报" in beizhu:
                 answer = "[{}]{}".format("转人成功不播报", answer)
             # 电销标签
             answer = "{}{}".format(labelUtil.add_common_label(actionLabel), answer)
@@ -94,8 +115,8 @@ def dealFAQ():
 def dealFAQNew(start_index, end_index):
     labelUtil = importFileService()
     operateExcel = OperateExcel()
-    readBook = xlrd.open_workbook(r'../excel/养老预约bot.xlsx')
-    sheetFaq = readBook.sheet_by_name("FAQ1")
+    readBook = xlrd.open_workbook(r'../excel/养老人机bot(2216空间).xlsx')
+    sheetFaq = readBook.sheet_by_name("不同地域不同回复FAQ")
     # sheetFaq = readBook.sheet_by_index(3)
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
@@ -108,7 +129,7 @@ def dealFAQNew(start_index, end_index):
         actionLabel = sheetFaq.cell(i, 5).value  # 动作标签
         merged = sheetFaq.merged_cells
         title = get_cell_type_copy(i, 0, merged, sheetFaq)
-        city = sheetFaq.cell(i, 8).value  # 城市名称
+        city = sheetFaq.cell(i, 6).value  # 城市名称
         faqSort = ""  # 分类
         if ncols > 6:
             faqSort = sheetFaq.cell(i, 6).value  # 分类
@@ -150,6 +171,34 @@ def dealFAQNew(start_index, end_index):
     print(reply)
 
 
+def commFAQ():
+    faq = '#if("$!{slot.share_subbot.value}" == "") \ntwo\n #else \none\n #end'
+    operateExcel = OperateExcel()
+    readBook = xlrd.open_workbook(r'../excel/FAQ_workspace2.xlsx')
+    faqOne = readBook.sheet_by_index(0)
+    readBook = xlrd.open_workbook(r'../excel/FAQ_workspace3.xlsx')
+    faqTwo = readBook.sheet_by_index(0)
+    sheetVersionList = []
+    j = 1
+    for i in range(1, 91):
+        query_one = faqOne.cell(i, 1).value  # 标准问
+        answer_one = faqOne.cell(i, 3).value  # 答案
+        query_two = faqTwo.cell(j, 1).value  # 标准问
+        answer_two = faqTwo.cell(j, 3).value  # 答案
+        answer = ""
+        if query_one == query_two:
+            j = j + 1
+            answer = faq.replace("two", answer_two).replace("one", answer_one)
+        else:
+            answer = faq.replace("two", "@continue@").replace("one", answer_one)
+        operateExcel.define_excel_format("", query_one, '', answer, sheetVersionList)
+    path2 = "../excel/FAQ_workspace5.xlsx"
+    print(path2)
+    operateExcel.write_excel_info(sheetVersionList, path2)
+
+
 if __name__ == '__main__':
     dealFAQ()
-    # dealFAQNew(1, 44)
+    # dealFAQNew(97, 108)
+    # commFAQ()
+    # dealRepeat()

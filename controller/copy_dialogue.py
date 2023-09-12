@@ -23,19 +23,20 @@ def copyWorkspaceNew(ori_workspace_id, ori_version_id, ori_dialogue_id,
 
 if __name__ == '__main__':
     old_cookie = ""
-    cookie = 'sidebar_toggle_state=off; JSESSIONID=node01uhm1ql07na4n1avzlozxladrd34334.node0'
+    cookie = 'sidebar_toggle_state=off; JSESSIONID=node0549e8rsbwidj1ad5lqy9pk8rq305826.node0'
 
-    # copyWorkspace(187, old_cookie, 291166, 447371, cookie)
+    # copyWorkspace(358, cookie, 360, 447371, cookie)
     # ori_workspace_id = 680383
     # ori_version_id = 620922
     # ori_dialogue_id = 631661
-    ori_workspace_id = 586840
-    ori_version_id = 399835
-    ori_dialogue_id = 456591
 
-    workspace_id = 586840
-    version_id = 399835
-    dialogue_id = 276791
+    ori_workspace_id = 55369
+    ori_version_id = 1017062
+    ori_dialogue_id = 1092953
+
+    workspace_id = 55369
+    version_id = 1017062
+    dialogue_id = 1207454
 
     copyWorkspaceNew(ori_workspace_id, ori_version_id, ori_dialogue_id
                      , workspace_id, version_id, dialogue_id, cookie)

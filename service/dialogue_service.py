@@ -20,6 +20,14 @@ def createDialogue(workspace_id, version_id, dialogue_name, intent_id, cookie):
     return dialogue
 
 
+# (通过意图创建对话列表)
+def createDialogueOld(workspace_id, dialogue_name, intent_id, cookie):
+    dialogue = dialogue_dao.addDialogueOld(dialogue_name, dialogue_name, workspace_id, cookie)
+    dialogue_dao.updateDialogueOld(dialogue["id"], dialogue["id"], workspace_id, cookie)
+    dialogue_dao.addRelationShipIntentAndDialogueOld(dialogue["id"], intent_id, workspace_id, cookie)
+    return dialogue
+
+
 # 更新对话信息
 def updateDialogueInfo(workspace_id, version_id, cookie):
     dialogueList = dialogue_dao.getDialogueList(workspace_id, version_id, cookie)
@@ -33,6 +41,24 @@ def updateDialogueInfo(workspace_id, version_id, cookie):
 # 获取对话列表
 def getDialogueNew(workspace_id, version_id, dialogue_name, cookie):
     dialogueList = dialogue_dao.getDialogueList(workspace_id, version_id, cookie)
+    dialogue_id = -2
+    for dialogue in dialogueList:
+        if dialogue_name == dialogue["name"]:
+            dialogue_id = "{}".format(dialogue["id"])
+            Logger.info("dialogue_id:{}, dialogue_name:{}".format(dialogue["id"], dialogue["name"]))
+            break
+    return dialogue_id
+
+
+# 获取对话列表
+def getDialogueList(workspace_id, version_id, cookie):
+    dialogueList = dialogue_dao.getDialogueList(workspace_id, version_id, cookie)
+    return dialogueList
+
+
+# 获取对话列表-旧
+def getDialogueOld(workspace_id, dialogue_name, cookie):
+    dialogueList = dialogue_dao.getDialogueFromOld(workspace_id, cookie)
     dialogue_id = -2
     for dialogue in dialogueList:
         if dialogue_name in dialogue["name"]:
@@ -67,6 +93,17 @@ def getDialogueName(context):
     if dialogue_name is None:
         return None
     return dialogue_name
+
+
+# 根据话术内容获取对话ID
+def getDialogueIdByContextOld(workspace_id, context, cookie):
+    util = CommonUtil()
+    dialogue_name = util.get_dialogue_name(context)
+    if dialogue_name is None:
+        return -2
+    dialogue_id = getDialogueOld(workspace_id, dialogue_name, cookie)
+    return dialogue_id
+
 
 
 if __name__ == '__main__':

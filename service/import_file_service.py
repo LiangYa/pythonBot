@@ -7,17 +7,22 @@ class importFileService(object):
     def buildAnswerInfo(self, number, content, user_label, flow_label, action):
         answer = ""
         if number != '':
-            number = str(number).replace(settings.RECORD_ROUND, "$!{slot.share_company.value.round}C").replace("姓", constants.SURNAME)\
+            number = str(number).replace(settings.RECORD_ROUND, "$!{slot.share_company.value.round}C")\
+                .replace("姓", constants.SURNAME)\
                 .replace("名", constants.NAME)
+                # .replace("HZ", "$!{slot.share_company.value.record_prefix}")\
+                # .replace("CJ", "$!{slot.share_company.value.record_prefix}")
             content = str(content).replace("【FAQ答案】+", "").replace("【faq答案】+", "")
             answer = "@#{}||{}#@".format(number, content)
         if flow_label is not None and flow_label != '':
             answer = "[{}]{}".format(flow_label, answer)
         if user_label != '':
+            user_label = str(user_label).replace("\n", "][")
             answer = "[{}]{}".format(user_label, answer)
         # 静音
         if constants.ACTION_QUIET in action:
-            answer = "{}{}".format(answer, constants.LABEL_QUIET)
+            # answer = "{}{}".format(answer, constants.LABEL_QUIET)
+            pass
         if constants.ACTION_SEND_SMS in action:
             answer = "[{}]{}".format(constants.LABEL_SEND_SMS, answer)
         if constants.ACTION_ADD_WECHAT in action:
@@ -41,16 +46,28 @@ class importFileService(object):
                 labels = "{}[{}]".format(labels, constants.LABEL_LOAN.get(label))
         return labels
 
-    # 添加电销标签
+    # # 添加电销标签
+    # def add_common_label(self, action):
+    #     if action is None or action == "":
+    #         return ""
+    #     action_labels = action.split("\n")
+    #     labels = ""
+    #     for label in action_labels:
+    #         if label in constants.LABEL_COMMON:
+    #             labels = "{}[{}]".format(labels, constants.LABEL_COMMON.get(label))
+    #     return labels
+
+# 添加电销标签
     def add_common_label(self, action):
         if action is None or action == "":
             return ""
-        action_labels = action.split("\n")
+        action_labels = action
         labels = ""
-        for label in action_labels:
-            if label in constants.LABEL_COMMON:
-                labels = "{}[{}]".format(labels, constants.LABEL_COMMON.get(label))
+        for label_com in constants.LABEL_COMMON:
+            if label_com in action_labels:
+                labels = "{}[{}]".format(labels, constants.LABEL_COMMON.get(label_com))
         return labels
+
 
     # 跳过上一个节点
     def jumpPreNode(self, content, name):
@@ -78,3 +95,14 @@ class importFileService(object):
                                    constants.REPLACE_NODE_FAQ, content, constants.REPLACE_NODE_END)
         replyCollects[pre_node_key] = answer
         return answer
+
+    # FAQ分类
+    def add_sort_label(self, action):
+        if action is None or action == "":
+            return ""
+        action_labels = action.split("\n")
+        labels = ""
+        for label in action_labels:
+            if label in constants.SORTS_LOAN:
+                labels = "{}{}".format(labels, constants.SORTS_LOAN.get(label))
+        return labels

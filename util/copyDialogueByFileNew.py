@@ -19,9 +19,9 @@ from dao import slot_dao
 # Excel导入流程
 # 京东-新平台创建对话流程
 def createSlotsNew(workspace_id, version_id, cookie):
-    readBook = xlrd.open_workbook(r'../excel/度小满新流程-STC-1call.xlsx')
+    readBook = xlrd.open_workbook(r'../excel/京东养老金开户bot.xlsx')
     # sheetFaq = readBook.sheet_by_index(0)
-    sheetFaq = readBook.sheet_by_name("度小满新流程-STC-1call")
+    sheetFaq = readBook.sheet_by_name("京东养老金带操作D版-0719(FZ0712)")
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
     nodeDataArray = [
@@ -192,13 +192,14 @@ def addLinkData(from_key=None, to_key=None, desc="为空", title="", number=0, d
         express = '#if($!session.query == "@@quiet@@") 1 #end'
         compare_type = "EQUALS"
         value = "1"
-    elif "其他" in title or "无明确回应" in title:
+    elif "不需要-使用其他平台" not in title and ("其他" in title or "无明确回应" in title):
         express = "1"
         value = "1"
         compare_type = "EQUALS"
         # number = 0
         desc = ""
-    elif ("其他" in title and "其他平台" not in title) or "无明确回应" in title or title == "" or title == '' or title is None:
+    elif "不需要-使用其他平台" not in title and ("其他" in title or "无明确回应" in title
+                                        or "" == title or '' == title or title is None):
         desc = "为空"
         if "其他" in title and "男" in title:
             express = '#if("${session.queryAttitude}" == "无" && ' \
@@ -228,6 +229,7 @@ def addLinkData(from_key=None, to_key=None, desc="为空", title="", number=0, d
         value = "1"
     elif "FAQ" in title:
         express = '#if("$!FaqResult.a" != "") 1 #end'
+        # express = '#if("$!FaqResult.a" != "" || ("$!preDialogue.name" != "" && $!preDialogue.name != "确认是否打开APP")) 1 #end'
         if "高意向" in title:
             express = '#if("$!FaqResult.a" != "" && $!{slot.share_high_interest.value} == 1) 1 #end'
         if "中意向" in title:
@@ -235,7 +237,7 @@ def addLinkData(from_key=None, to_key=None, desc="为空", title="", number=0, d
         compare_type = "EQUALS"
         value = "1"
     else:
-        title = title.replace("/", ",")
+        # title = title.replace("/", ",")
         title = title.replace("\n", ",")
         faq_title_list = title.split(",")
         faq_express = ""
@@ -350,7 +352,7 @@ def addSlotNode(name, k, dialogue_branch, dialogue_round, known_key=0):
 
 
 if __name__ == '__main__':
-    cookie = "JSESSIONID=node0bb1ero5axst2ii3pca3cbcv75109272.node0"
-    dealWorkspace(545632, 656453, 727781, cookie)
+    cookie = "JSESSIONID=node017gwsehvzz4tw1obxcudkp97d46262198.node0"
+    dealWorkspace(661490, 1097459, 1063972, cookie)
 
 

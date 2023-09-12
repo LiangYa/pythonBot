@@ -466,5 +466,7 @@ def getSlotFromNew(workspace_id, slot_id, version_id, cookie):
     Logger.info(logPredix)
     response = request_util.get_old(url, cookie)
     resultJson = response.json()
-    # Logger.info(resultJson)
+    Logger.info("getSlotFromNew: ")
+    Logger.info(resultJson)
+    time.sleep(1)
     return resultJson["result"]

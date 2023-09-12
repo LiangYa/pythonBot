@@ -21,7 +21,7 @@ from dao import slot_dao
 def createSlotsNew(workspace_id, version_id, cookie):
     readBook = xlrd.open_workbook(r'../excel/360BOT.xlsx')
     # sheetFaq = readBook.sheet_by_index(4)
-    sheetFaq = readBook.sheet_by_name("首轮沟通B-有减免标")
+    sheetFaq = readBook.sheet_by_name("全局通用子流程-360")
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
     nodeDataArray = [
@@ -347,8 +347,8 @@ def addSlotNode(name, k, dialogue_branch, dialogue_round):
 
 
 if __name__ == '__main__':
-    cookie = "JSESSIONID=node0kzo2hapkj1yq1qf56bl77lpvf6748392.node0"
-    dealWorkspace(291166, 447371, 725652, cookie)
+    cookie = "JSESSIONID=node0at1q2lhs29xhoyz5l5xqyt3b106551.node0"
+    dealWorkspace(8660, 587167, 757385, cookie)
     # dealWorkspace(50468, 104126, 105755, cookie)
     # createSlotsNew()
 

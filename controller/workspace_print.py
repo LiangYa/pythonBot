@@ -8,13 +8,13 @@ from util.operate_excel import OperateExcel
 
 def dealWorkspace(commUtil=None, impFileService=None):
     operateExcel = OperateExcel()
-    readBook = xlrd.open_workbook(r'../excel/ToB加微策略详情.xlsx')
-    sheetFaq = readBook.sheet_by_index(0)
-    # sheetFaq = readBook.sheet_by_name("FAQ-1025")
+    readBook = xlrd.open_workbook(r'../excel/星火保均分BOT.xlsx')
+    # sheetFaq = readBook.sheet_by_index(1)
+    sheetFaq = readBook.sheet_by_name("星火保均分NBS1call-0331")
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
     impFileService = importFileService()
-    for i in range(4, 5):
+    for i in range(34, 35):
         attitude = sheetFaq.cell(i, 6).value
         number = sheetFaq.cell(i, 7).value
         label = sheetFaq.cell(i, 9).value
@@ -43,9 +43,9 @@ def dealWorkspace(commUtil=None, impFileService=None):
 
 def dealWorkspaceNew(start_index, end_index):
     operateExcel = OperateExcel()
-    readBook = xlrd.open_workbook(r'../excel/MT-美团电销发卡bot 策略.xlsx')
+    readBook = xlrd.open_workbook(r'../excel/360借条加微-已、未结清现金红包.xlsx')
     # sheetFaq = readBook.sheet_by_index(0)
-    sheetFaq = readBook.sheet_by_name("MT-美团电销发卡江苏银行单独流程版本0907评分卡")
+    sheetFaq = readBook.sheet_by_name("消费已结清现金回访-0601")
     nrows = sheetFaq.nrows  # 行
     ncols = sheetFaq.ncols  # 列
     impFileService = importFileService()
@@ -58,14 +58,16 @@ def dealWorkspaceNew(start_index, end_index):
         label2 = get_cell_type(i, constants.FLOW_LABEL_NODE, merged, sheetFaq)
         # name1 = get_cell_type(i, 1, merged, sheetFaq)
         # name = commUtil.creatName(attitude)
-        answer = impFileService.buildAnswerInfo(number, content, label, label2, action)
+        answer = impFileService.buildAnswerInfo(number, content,
+                                                str(label).replace(" ", ""),
+                                                str(label2).replace("\t", ""), action)
         if number != '' and constants.ACTION_END not in action:
             # 1.2.1 添加判断跳过上一个节点
-            answer = impFileService.jumpPreNode(answer, "分流_99")
+            answer = impFileService.jumpPreNode(answer, "分流_91")
         elif number != '' and constants.ACTION_END in action:
             if constants.ACTION_BREAK in action:
                 answer = "{}{}".format(answer, constants.LABEL_BREAK_END)
-                answer = impFileService.jumpPreNode(answer, "分流_99")
+                answer = impFileService.jumpPreNode(answer, "分流_91")
             else:
                 answer = "{}{}".format(answer, constants.LABEL_END)
         else:
@@ -76,6 +78,6 @@ def dealWorkspaceNew(start_index, end_index):
 
 
 if __name__ == '__main__':
-    dealWorkspaceNew(204, 205)
+    dealWorkspaceNew(71, 72)
     # dealWorkspace()
     # dealWork()
